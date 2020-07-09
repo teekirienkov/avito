@@ -6,6 +6,8 @@ const modalAdd = document.querySelector('.modal__add'), // все модальн
       modalItem = document.querySelector('.modal__item'), // модальное окно объявления (тоже выпадает за модалку)
       modalButtonWarning = document.querySelector('.modal__btn-warning');
 
+const dataBase = [];
+
 const elementsModalSubmit = [...modalSubmitForm.elements] // получаем псевдомассив элементов и парсим его spread
   .filter(elem => elem.tagName !== 'BUTTON' && elem.type !== 'submit'); // фильтруем кнопку из элементов
 
@@ -15,27 +17,42 @@ modalSubmitForm.addEventListener('input', () => {
   modalButtonWarning.style.display = validForm ? 'none' : '';
 })
 
+modalSubmitForm.addEventListener('submit', event => {
+  event.preventDefault();
+
+  const itemObj = {};
+
+  for (const elem of elementsModalSubmit) {
+    itemObj[elem.name] = elem.value
+  }
+
+  dataBase.push(itemObj);
+
+  modalSubmitForm.addEventListener('submit', closeModal)
+  modalSubmitForm.reset()
+})
+
 addAdButton.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
   modalButtonSubmit.disabled = true;
-  document.addEventListener('keydown', closeModalEscape)
-});
+  document.addEventListener('keydown', closeModal)
+})
 
-modalAdd.addEventListener('click', closeModal);
-modalItem.addEventListener('click', closeModal);
+modalAdd.addEventListener('click', closeModal)
+modalItem.addEventListener('click', closeModal)
 
 catalog.addEventListener('click', event => {
   const { target } = event;
 
   if (target.closest('.card')) {
     modalItem.classList.remove('hide');
-    document.addEventListener('keydown', closeModalEscape)
+    document.addEventListener('keydown', closeModal)
   }
 })
 
 // modules
 function closeModal(event) {
-  const { target } = event;
+  const { target, key } = event;
 
   if (target.closest('.modal__close') || target === this) {
     this.classList.add('hide');
@@ -43,14 +60,21 @@ function closeModal(event) {
       modalSubmitForm.reset()
     }
   }
-}
 
-function closeModalEscape(event) {
-  const { key } = event;
   if (key === 'Escape') {
     modalItem.classList.add('hide');
     modalAdd.classList.add('hide');
-    document.removeEventListener('keydown', closeModalEscape)
+    document.removeEventListener('keydown', closeModal);
+    modalSubmitForm.reset()
   }
 }
+
+// function closeModalEscape(event) {
+//   const { key } = event;
+//   if (key === 'Escape') {
+//     modalItem.classList.add('hide');
+//     modalAdd.classList.add('hide');
+//     document.removeEventListener('keydown', closeModalEscape)
+//   }
+// }
 // /modules

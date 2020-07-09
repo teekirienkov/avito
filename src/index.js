@@ -3,8 +3,17 @@ const modalAdd = document.querySelector('.modal__add'), // все модальн
       modalButtonSubmit = document.querySelector('.modal__btn-submit'),
       modalSubmitForm = document.querySelector('.modal__submit'),
       catalog = document.querySelector('.catalog'), // объявления
-      modalItem = document.querySelector('.modal__item'); // модальное окно объявления (тоже выпадает за модалку)
+      modalItem = document.querySelector('.modal__item'), // модальное окно объявления (тоже выпадает за модалку)
+      modalButtonWarning = document.querySelector('.modal__btn-warning');
 
+const elementsModalSubmit = [...modalSubmitForm.elements] // получаем псевдомассив элементов и парсим его spread
+  .filter(elem => elem.tagName !== 'BUTTON' && elem.type !== 'submit'); // фильтруем кнопку из элементов
+
+modalSubmitForm.addEventListener('input', () => {
+  const validForm = elementsModalSubmit.every(elem => elem.value)
+  modalButtonSubmit.disabled = !validForm;
+  modalButtonWarning.style.display = validForm ? 'none' : '';
+})
 
 addAdButton.addEventListener('click', () => {
   modalAdd.classList.remove('hide');

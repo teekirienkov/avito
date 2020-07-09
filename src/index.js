@@ -1,7 +1,9 @@
-const modalAdd = document.querySelector('.modal__add'), // все модальные окна (этот класс выпадает на body)
+const modalAdd = document.querySelector('.modal__add'), // все модальные окна (этот класс выпадает за края модалки)
       addAdButton = document.querySelector('.add__ad'),
       modalButtonSubmit = document.querySelector('.modal__btn-submit'),
-      modalSubmitForm = document.querySelector('.modal__submit');
+      modalSubmitForm = document.querySelector('.modal__submit'),
+      catalog = document.querySelector('.catalog'), // объявления
+      modalItem = document.querySelector('.modal__item'); // модальное окно объявления (тоже выпадает за модалку)
 
 
 addAdButton.addEventListener('click', () => {
@@ -9,11 +11,28 @@ addAdButton.addEventListener('click', () => {
   modalButtonSubmit.disabled = true
 });
 
-modalAdd.addEventListener('click', event => {
+modalAdd.addEventListener('click', closeModal);
+modalItem.addEventListener('click', closeModal);
+
+catalog.addEventListener('click', event => {
   const { target } = event;
 
-  if (target.closest('.modal__close') || target === modalAdd) {
-    modalAdd.classList.add('hide');
-    modalSubmitForm.reset();
+  if (target.closest('.card')) {
+    modalItem.classList.remove('hide')
   }
 })
+
+// modules
+
+function closeModal(event) {
+  const { target } = event;
+
+  if (target.closest('.modal__close') || target === this) {
+    this.classList.add('hide');
+    if (this === modalAdd) {
+      modalSubmitForm.reset()
+    }
+  }
+}
+
+// /modules

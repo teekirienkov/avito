@@ -8,7 +8,8 @@ const modalAdd = document.querySelector('.modal__add'), // все модальн
 
 addAdButton.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
-  modalButtonSubmit.disabled = true
+  modalButtonSubmit.disabled = true;
+  document.addEventListener('keydown', closeModalEscape)
 });
 
 modalAdd.addEventListener('click', closeModal);
@@ -18,12 +19,12 @@ catalog.addEventListener('click', event => {
   const { target } = event;
 
   if (target.closest('.card')) {
-    modalItem.classList.remove('hide')
+    modalItem.classList.remove('hide');
+    document.addEventListener('keydown', closeModalEscape)
   }
 })
 
 // modules
-
 function closeModal(event) {
   const { target } = event;
 
@@ -35,4 +36,12 @@ function closeModal(event) {
   }
 }
 
+function closeModalEscape(event) {
+  const { key } = event;
+  if (key === 'Escape') {
+    modalItem.classList.add('hide');
+    modalAdd.classList.add('hide');
+    document.removeEventListener('keydown', closeModalEscape)
+  }
+}
 // /modules

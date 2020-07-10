@@ -1,3 +1,5 @@
+import {checkForm} from '../index';
+
 const modalAdd = document.querySelector('.modal__add'),
       modalItem = document.querySelector('.modal__item'),
       modalSubmitForm = document.querySelector('.modal__submit');
@@ -9,6 +11,7 @@ function closeModal(event) {
     this.classList.add('hide');
     if (this === modalAdd) {
       modalSubmitForm.reset()
+      checkForm()
     }
   }
 
@@ -17,6 +20,7 @@ function closeModal(event) {
     modalAdd.classList.add('hide');
     document.removeEventListener('keydown', closeModal);
     modalSubmitForm.reset()
+    checkForm()
   }
 }
 

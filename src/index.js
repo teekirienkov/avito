@@ -6,23 +6,41 @@ const modalAdd = document.querySelector('.modal__add'), // все модальн
       modalSubmitForm = document.querySelector('.modal__submit'),
       catalog = document.querySelector('.catalog'), // объявления
       modalItem = document.querySelector('.modal__item'), // модальное окно объявления (тоже выпадает за модалку)
-      modalButtonWarning = document.querySelector('.modal__btn-warning');
-
-const dataBase = [];
+      modalButtonWarning = document.querySelector('.modal__btn-warning'),
+      modalFileInput = document.querySelector('.modal__file-input'),
+      modalFileButton = document.querySelector('.modal__file-btn'),
+      modalImageAdd = document.querySelector('.modal__image-add');
 
 const elementsModalSubmit = [...modalSubmitForm.elements] // получаем псевдомассив элементов и парсим его spread
   .filter(elem => elem.tagName !== 'BUTTON' && elem.type !== 'submit'); // фильтруем кнопку из элементов
+    
+const dataBase = JSON.parse(localStorage.getItem('avito')) || [];
+
+const infoPhoto = {};
+
+modalFileInput.addEventListener('change', event => {
+  const { target } = event;
+  const file = target.files[0];
+  infoPhoto.filename = file.name;
+  infoPhoto.size = file.size;
+
+  const reader = new FileReader();
+    
+  reader.readAsBinaryString(file);
+
+  reader.addEventListener('load', event => {
+    modalFileButton.textContent = infoPhoto.filename // меняем название кнопки добавить фото на filename
+    infoPhoto.base64 = btoa(event.target.result);
+    modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`
+  })
+  
+})
 
 // валидация инпутов
-modalSubmitForm.addEventListener('input', () => {
-  const validForm = elementsModalSubmit.every(elem => elem.value)
-  modalButtonSubmit.disabled = !validForm;
-  modalButtonWarning.style.display = validForm ? 'none' : '';
-})
+modalSubmitForm.addEventListener('input', checkForm)
 
 modalSubmitForm.addEventListener('submit', event => {
   event.preventDefault();
-
   const itemObj = {};
 
   for (const elem of elementsModalSubmit) {
@@ -31,9 +49,11 @@ modalSubmitForm.addEventListener('submit', event => {
 
   // пуш в импровизированную БД
   dataBase.push(itemObj);
+  saveDB(dataBase);
 
   modalSubmitForm.reset();
   modalAdd.classList.add('hide')
+  checkForm()
 })
 
 addAdButton.addEventListener('click', () => {
@@ -55,7 +75,15 @@ catalog.addEventListener('click', event => {
 })
 
 // modules
+export function checkForm() {
+  const validForm = elementsModalSubmit.every(elem => elem.value)
+  modalButtonSubmit.disabled = !validForm;
+  modalButtonWarning.style.display = validForm ? 'none' : '';
+}
 
+function saveDB(data) {
+  localStorage.setItem('avito', JSON.stringify(data))
+}
 // /modules
 
 

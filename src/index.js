@@ -29,9 +29,13 @@ modalFileInput.addEventListener('change', event => {
   reader.readAsBinaryString(file);
 
   reader.addEventListener('load', event => {
-    modalFileButton.textContent = infoPhoto.filename // меняем название кнопки добавить фото на filename
-    infoPhoto.base64 = btoa(event.target.result);
-    modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`
+    if (infoPhoto.size < 200000) {
+      modalFileButton.textContent = infoPhoto.filename // меняем название кнопки добавить фото на filename
+      infoPhoto.base64 = btoa(event.target.result);
+      modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`
+    } else {
+      modalFileButton.textContent = `Maximum 200 kb`
+    }
   })
   
 })
@@ -46,6 +50,8 @@ modalSubmitForm.addEventListener('submit', event => {
   for (const elem of elementsModalSubmit) {
     itemObj[elem.name] = elem.value
   }
+
+  itemObj.image = infoPhoto.base64;
 
   // пуш в импровизированную БД
   dataBase.push(itemObj);

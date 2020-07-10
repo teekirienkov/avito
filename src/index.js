@@ -1,3 +1,5 @@
+import closeModal from './components/closeModal';
+
 const modalAdd = document.querySelector('.modal__add'), // все модальные окна (этот класс выпадает за края модалки)
       addAdButton = document.querySelector('.add__ad'),
       modalButtonSubmit = document.querySelector('.modal__btn-submit'),
@@ -11,6 +13,7 @@ const dataBase = [];
 const elementsModalSubmit = [...modalSubmitForm.elements] // получаем псевдомассив элементов и парсим его spread
   .filter(elem => elem.tagName !== 'BUTTON' && elem.type !== 'submit'); // фильтруем кнопку из элементов
 
+// валидация инпутов
 modalSubmitForm.addEventListener('input', () => {
   const validForm = elementsModalSubmit.every(elem => elem.value)
   modalButtonSubmit.disabled = !validForm;
@@ -26,10 +29,11 @@ modalSubmitForm.addEventListener('submit', event => {
     itemObj[elem.name] = elem.value
   }
 
+  // пуш в импровизированную БД
   dataBase.push(itemObj);
 
-  modalSubmitForm.addEventListener('submit', closeModal)
-  modalSubmitForm.reset()
+  modalSubmitForm.reset();
+  modalAdd.classList.add('hide')
 })
 
 addAdButton.addEventListener('click', () => {
@@ -51,23 +55,7 @@ catalog.addEventListener('click', event => {
 })
 
 // modules
-function closeModal(event) {
-  const { target, key } = event;
 
-  if (target.closest('.modal__close') || target === this) {
-    this.classList.add('hide');
-    if (this === modalAdd) {
-      modalSubmitForm.reset()
-    }
-  }
-
-  if (key === 'Escape') {
-    modalItem.classList.add('hide');
-    modalAdd.classList.add('hide');
-    document.removeEventListener('keydown', closeModal);
-    modalSubmitForm.reset()
-  }
-}
 // /modules
 
 

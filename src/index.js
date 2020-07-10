@@ -68,6 +68,8 @@ function closeModal(event) {
     modalSubmitForm.reset()
   }
 }
+// /modules
+
 
 // function closeModalEscape(event) {
 //   const { key } = event;
@@ -77,4 +79,3 @@ function closeModal(event) {
 //     document.removeEventListener('keydown', closeModalEscape)
 //   }
 // }
-// /modules

@@ -9,7 +9,14 @@ const modalAdd = document.querySelector('.modal__add'), // все модальн
       modalButtonWarning = document.querySelector('.modal__btn-warning'),
       modalFileInput = document.querySelector('.modal__file-input'),
       modalFileButton = document.querySelector('.modal__file-btn'),
-      modalImageAdd = document.querySelector('.modal__image-add');
+      modalImageAdd = document.querySelector('.modal__image-add'),
+
+      modalImageItem = document.querySelector('.modal__image-item'),
+      modalHeaderItem = document.querySelector('.modal__header-item'),
+      modalStatusItem = document.querySelector('.modal__status-item'),
+      modalDescriptionItem = document.querySelector('.modal__description-item'),
+      modalCostItem = document.querySelector('.modal__cost-item');
+
 
 const elementsModalSubmit = [...modalSubmitForm.elements] // получаем псевдомассив элементов и парсим его spread
   .filter(elem => elem.tagName !== 'BUTTON' && elem.type !== 'submit'); // фильтруем кнопку из элементов
@@ -34,7 +41,9 @@ modalFileInput.addEventListener('change', event => {
       infoPhoto.base64 = btoa(event.target.result);
       modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`
     } else {
-      modalFileButton.textContent = `Maximum 200 kb`
+      modalFileButton.textContent = `Maximum 200 kb`;
+      modalFileInput.value = '';
+      checkForm()
     }
   })
   
@@ -55,11 +64,13 @@ modalSubmitForm.addEventListener('submit', event => {
 
   // пуш в импровизированную БД
   dataBase.push(itemObj);
+  modalAdd.classList.add('hide');
   saveDB(dataBase);
 
   modalSubmitForm.reset();
-  modalAdd.classList.add('hide')
-  checkForm()
+  
+  checkForm();
+  renderCard();
 })
 
 addAdButton.addEventListener('click', () => {
@@ -71,16 +82,51 @@ addAdButton.addEventListener('click', () => {
 modalAdd.addEventListener('click', closeModal)
 modalItem.addEventListener('click', closeModal)
 
+
 catalog.addEventListener('click', event => {
   const { target } = event;
+  const card = target.closest('.card')
 
-  if (target.closest('.card')) {
+  
+  if (card) {
+    const item = dataBase[card.dataset.id];
+
+    const { image, costItem, descriptionItem, nameItem, status } = item;
+    
+    modalImageItem.src = `data:image/jpeg;base64,${image}`;
+    modalHeaderItem.textContent = nameItem;
+    modalDescriptionItem.textContent = descriptionItem;
+    modalCostItem.textContent = `${costItem} ₽`;
+    if (status === 'old') {
+      modalStatusItem.textContent = 'Б/У';
+    } else {
+      modalStatusItem.textContent = 'Новое';
+    }
+
     modalItem.classList.remove('hide');
     document.addEventListener('keydown', closeModal)
   }
 })
 
 // modules
+function renderCard() {
+  catalog.textContent = ``;
+
+  dataBase.forEach((item, i) => {
+    const { image, category, costItem, descriptionItem, nameItem, status } = item;
+
+    catalog.insertAdjacentHTML('beforeend', `
+    <li class="card" data-id="${i}">
+      <img class="card__image" src="data:image/jpeg;base64,${image}" alt="test">
+      <div class="card__description">
+        <h3 class="card__header">${nameItem}</h3>
+        <div class="card__price">${costItem} ₽</div>
+      </div>
+    </li>
+    `);
+  })
+}
+
 export function checkForm() {
   const validForm = elementsModalSubmit.every(elem => elem.value)
   modalButtonSubmit.disabled = !validForm;
@@ -92,6 +138,7 @@ function saveDB(data) {
 }
 // /modules
 
+renderCard()
 
 // function closeModalEscape(event) {
 //   const { key } = event;
